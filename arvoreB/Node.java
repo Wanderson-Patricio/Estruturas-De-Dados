@@ -3,6 +3,7 @@ public class Node {
 	private int[] keys;
 	private int size;
 	private boolean isLeaf;
+    private Node parent;
 	private Node[] childrens;
 	
 	public Node(int order, boolean isLeaf) {
@@ -21,17 +22,42 @@ public class Node {
 		return this.keys[i];
 	}
 
+    public int[] getKeys(){
+        return keys;
+    }
+
 	public int getSize() {
 		return size;
 	}
+
+    public void setSize(int size){
+        this.size = size;
+    }
 
 	public boolean isLeaf() {
 		return isLeaf;
 	}
 
+     public Node getParent() {
+        return parent;
+    }
+
 	public Node getChildren(int i) {
 		return this.childrens[i];
 	}
+
+    public Node[] getChildrens(){
+        return this.childrens;
+    }
+
+    
+    public boolean isFull(){
+        return this.size == 2*this.order;
+    }
+
+    public boolean isEmpty(){
+        return this.size == 0;
+    }
 	
 	public int busca(int valor){
 		int fim = this.size-1;
@@ -57,69 +83,48 @@ public class Node {
 	}
 	
 	public void insert(int valor){
-		if(this.busca(valor) == 1 || this.size >= 2*this.order) return;
-		
-		int fim = this.size-1;
-		int inicio = 0;
-		int meio = (fim+inicio)/2;
-		
-		int index = -1;
+		if(this.isFull() || this.busca(valor) != -1) return;
+        int index = 0;
 		
 		if(this.keys[0] > valor){
 			index = 0;
-		}else if(valor > this.keys[this.size - 1]){
-			index = this.size;
-		}else{
-			while(inicio <= fim){
-				
-				if(valor < this.keys[meio]){
-					
-					if(valor > this.keys[meio - 1]){
-						index = meio;
-						break;
-					}else{
-						fim = meio - 1;
-					}
-					
-				}else{
-					
-					if(valor < this.keys[meio + 1]){
-						index = meio + 1;
-						break;
-					}else{
-						inicio = meio + 1;
-					}
-					
-				}
-				
-				meio = (inicio + fim)/2;
-				
-			}
-		}
+        }else if(valor > this.keys[this.size >= 1 ? this.size-1 : 0]){
+            index = this.size;
+        }else{
+            for(int i = 1; i<this.size-1; i++){
+
+                if(this.keys[i] > valor && this.keys[i-1] < valor){
+                    index = i;
+                    break;
+                }
+
+            }
+        }
+
+
 		
-		for(int i=index; i<this.size; i++){
-			this.keys[i+1] = this.keys[i];
-		}
+		for (int i = this.size - 1; i >= index; i--) {  // Correção aqui
+            this.keys[i + 1] = this.keys[i];
+        }
 		
 		this.keys[index] = valor;
+        this.size++;
 	}
+
+    public void remove(int index){
+        if(this.isEmpty() || this.size -1 < index || index < 0) return;
+
+        for(int i = index; i<this.size - 1; i++){
+            this.keys[i] = this.keys[i+1];
+        }
+
+        this.size--;
+    }
 	
 	void imprime(){
-		for(int x: this.keys){
-			System.out.println(x);
+		for(int i = 0; i< this.size; i++){
+			System.out.println(this.keys[i]);
 		}
 	}
 	
-	
-	public static void main(String[] args) {
-		Node n = new Node(15, true);
-		
-		n.insert(5);
-		n.insert(15);
-		n.insert(25);
-		n.insert(-5);
-		n.insert(0);
-		
-		n.imprime();
-	}
 }
