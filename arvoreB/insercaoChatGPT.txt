@@ -1,0 +1,125 @@
+class TreeNode {
+    int[] keys;
+    TreeNode[] children;
+    boolean isLeaf;
+    int numKeys;
+
+    public TreeNode(boolean isLeaf, int degree) {
+        this.keys = new int[2 * degree - 1];
+        this.children = new TreeNode[2 * degree];
+        this.isLeaf = isLeaf;
+        this.numKeys = 0;
+    }
+}
+
+public class BTree {
+    private TreeNode root;
+    private int degree; // Grau da árvore B
+
+    public BTree(int degree) {
+        this.root = new TreeNode(true, degree); // Inicialmente, a raiz é uma folha
+        this.degree = degree;
+    }
+
+    public void insert(int key) {
+        TreeNode rootNode = root;
+
+        if (rootNode.numKeys == 2 * degree - 1) {
+            TreeNode newRoot = new TreeNode(false, degree);
+            newRoot.children[0] = root;
+            splitChild(newRoot, 0);
+            root = newRoot;
+            insertNonFull(root, key);
+        } else {
+            insertNonFull(rootNode, key);
+        }
+    }
+
+    private void insertNonFull(TreeNode node, int key) {
+        int i = node.numKeys - 1;
+
+        if (node.isLeaf) {
+            while (i >= 0 && key < node.keys[i]) {
+                node.keys[i + 1] = node.keys[i];
+                i--;
+            }
+            node.keys[i + 1] = key;
+            node.numKeys++;
+        } else {
+            while (i >= 0 && key < node.keys[i]) {
+                i--;
+            }
+            i++;
+
+            TreeNode child = node.children[i];
+            if (child.numKeys == 2 * degree - 1) {
+                splitChild(node, i);
+                if (key > node.keys[i]) {
+                    i++;
+                }
+            }
+            insertNonFull(node.children[i], key);
+        }
+    }
+
+    private void splitChild(TreeNode parentNode, int childIndex) {
+        TreeNode childNode = parentNode.children[childIndex];
+        TreeNode newChildNode = new TreeNode(childNode.isLeaf, degree);
+
+        parentNode.numKeys++;
+        for (int j = parentNode.numKeys - 1; j > childIndex; j--) {
+            parentNode.keys[j] = parentNode.keys[j - 1];
+        }
+        parentNode.keys[childIndex] = childNode.keys[degree - 1];
+
+        for (int j = parentNode.numKeys; j > childIndex + 1; j--) {
+            parentNode.children[j] = parentNode.children[j - 1];
+        }
+        parentNode.children[childIndex + 1] = newChildNode;
+
+        for (int j = 0; j < degree - 1; j++) {
+            newChildNode.keys[j] = childNode.keys[j + degree];
+        }
+
+        if (!childNode.isLeaf) {
+            for (int j = 0; j < degree; j++) {
+                newChildNode.children[j] = childNode.children[j + degree];
+            }
+        }
+
+        childNode.numKeys = degree - 1;
+    }
+
+    public static void main(String[] args) {
+        BTree bTree = new BTree(3); // Crie uma árvore B com grau 3
+
+        // Insira alguns valores na árvore B
+        bTree.insert(10);
+        bTree.insert(20);
+        bTree.insert(5);
+        bTree.insert(6);
+        bTree.insert(12);
+        bTree.insert(30);
+
+        // Impressão da árvore B
+        System.out.println("Árvore B:");
+        printBTree(bTree.root);
+    }
+
+    public static void printBTree(TreeNode node) {
+        if (node != null) {
+            System.out.print("Keys: ");
+            for (int i = 0; i < node.numKeys; i++) {
+                System.out.print(node.keys[i] + " ");
+            }
+            System.out.println();
+
+            if (!node.isLeaf) {
+                System.out.println("Children:");
+                for (int i = 0; i <= node.numKeys; i++) {
+                    printBTree(node.children[i]);
+                }
+            }
+        }
+    }
+}
