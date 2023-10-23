@@ -23,6 +23,22 @@ public class BinarySearchTree {
 		return this.search(this.root, value);
 	}
 	
+	private void updateHeight(BinaryNode node) {
+        
+        int left = (node.getLeft() != null) ? node.getLeft().getHeight() : 0;
+        int right = (node.getRight() != null) ? node.getRight().getHeight() : 0;
+        
+        node.setHeight(Math.max(left, right) + 1);
+    }
+	
+	private void inOrderUpdateHeight(BinaryNode node) {
+		if(node != null) {
+			inOrderUpdateHeight(node.getLeft());
+			inOrderUpdateHeight(node.getRight());
+			updateHeight(node);
+		}
+	}
+	
 	private void insert(BinaryNode n, int value) {
 		if(n.getValue() > value) {
 			
@@ -47,13 +63,15 @@ public class BinarySearchTree {
 	
 	public boolean insert(int value) {
 		if(this.search(value) != null) return false;
+		
 		if(this.root == null) {
 			this.root = new BinaryNode(value);
 			this.root.setLeft(null);
-			return true;
+		}else {
+			this.insert(root, value);
 		}
 		
-		this.insert(root, value);
+		inOrderUpdateHeight(root);
 		return true;
 	}
 	
