@@ -2,6 +2,7 @@ package classes;
 
 public class BinarySearchTree {
 	private BinaryNode root;
+	
 
 	public BinaryNode getRoot() {
 		return root;
@@ -23,12 +24,14 @@ public class BinarySearchTree {
 		return this.search(this.root, value);
 	}
 	
-	private void updateHeight(BinaryNode node) {
+	public void updateHeight(BinaryNode node) {
         
         int left = (node.getLeft() != null) ? node.getLeft().getHeight() : 0;
         int right = (node.getRight() != null) ? node.getRight().getHeight() : 0;
         
         node.setHeight(Math.max(left, right) + 1);
+        node.setLeftHeight(left);
+        node.setRightHeight(right);
     }
 	
 	private void inOrderUpdateHeight(BinaryNode node) {
@@ -144,6 +147,8 @@ public class BinarySearchTree {
 	            child.setParent(parent);
 	        }
 	    }
+	    
+	    this.inOrderUpdateHeight(root);
 
 	    return true;
 	}
