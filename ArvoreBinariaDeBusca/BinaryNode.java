@@ -5,12 +5,31 @@ public class BinaryNode{
 	private BinaryNode parent;
 	private BinaryNode left;
 	private BinaryNode right;
+	private int height, leftHeight, rightHeight;
 	
 	public BinaryNode(int value) {
 		this.value = value;
 	}
 	
 	
+	public int getLeftHeight() {
+		return leftHeight;
+	}
+	public void setLeftHeight(int leftHeight) {
+		this.leftHeight = leftHeight;
+	}
+	public int getRightHeight() {
+		return rightHeight;
+	}
+	public void setRightHeight(int rightHeight) {
+		this.rightHeight = rightHeight;
+	}
+	public int getHeight() {
+		return height;
+	}
+	public void setHeight(int height) {
+		this.height = height;
+	}
 	public boolean isLeaf() {
 		return this.left == null && this.right == null;
 	}
@@ -46,7 +65,7 @@ public class BinaryNode{
 	}
 	
 	public String toString() {
-		String result = "" + this.value + " - ";
+		String result = "" + this.value + " - height : " + this.height + " - ";
 		
 		if(!this.isLeaf()) {
 			result += "Childrens: ";
